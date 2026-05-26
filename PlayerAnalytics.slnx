@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="PlayerAnalytics.Database.Shared/PlayerAnalytics.Database.Shared.csproj" />
+  <Project Path="PlayerAnalytics.Database/PlayerAnalytics.Database.csproj" />
+  <Project Path="PlayerAnalytics.Shared/PlayerAnalytics.Shared.csproj" />
+  <Project Path="PlayerAnalytics.Core/PlayerAnalytics.Core.csproj" />
+</Solution>

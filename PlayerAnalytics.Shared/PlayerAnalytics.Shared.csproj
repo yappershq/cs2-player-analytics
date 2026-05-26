@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="$(PARoot)PlayerAnalytics.Database.Shared\PlayerAnalytics.Database.Shared.csproj" Private="false" />
+  </ItemGroup>
+</Project>

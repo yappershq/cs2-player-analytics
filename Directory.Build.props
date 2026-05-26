@@ -1,0 +1,84 @@
+<Project>
+  <PropertyGroup>
+    <PARoot>$(MSBuildThisFileDirectory)</PARoot>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Authors>YappersHQ</Authors>
+    <VersionPrefix>1.0</VersionPrefix>
+    <VersionSuffix>0</VersionSuffix>
+    <Version>$(VersionPrefix).$(VersionSuffix)</Version>
+
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <LangVersion>14</LangVersion>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PlatformTarget>x64</PlatformTarget>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+
+    <BuildDateTime>$([System.DateTime]::Now.ToString("yyyy-MM-dd HH:mm:ss"))</BuildDateTime>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+
+  <!-- Output paths -->
+  <PropertyGroup>
+    <IsSharedProject>$([System.String]::new('$(MSBuildProjectName)').EndsWith('.Shared'))</IsSharedProject>
+    <IsModuleProject Condition="'$(IsSharedProject)' != 'true'">true</IsModuleProject>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(IsSharedProject)' == 'true'">
+    <OutputPath>$(MSBuildThisFileDirectory).build\shared\$(MSBuildProjectName)\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(IsModuleProject)' == 'true'">
+    <OutputPath>$(MSBuildThisFileDirectory).build\modules\$(MSBuildProjectName)\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="obj\**" />
+    <EmbeddedResource Remove="obj\**" />
+    <None Remove="obj\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>BuildTime</_Parameter1>
+      <_Parameter2>$(BuildDateTime)</_Parameter2>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+  <!--
+    ModSharp framework references come from NuGet (ModSharp.Sharp.*).
+    PrivateAssets="all" prevents the runtime DLLs from being copied to plugin output,
+    since they're supplied by ModSharp itself at load time.
+  -->
+  <PropertyGroup>
+    <ModSharpVersion>2.1.123</ModSharpVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ModSharp.Sharp.Shared"                              Version="$(ModSharpVersion)" PrivateAssets="all" ExcludeAssets="runtime" />
+    <PackageReference Include="ModSharp.Sharp.Modules.LocalizerManager.Shared"     Version="$(ModSharpVersion)" PrivateAssets="all" ExcludeAssets="runtime" />
+    <PackageReference Include="ModSharp.Sharp.Modules.CommandCenter.Shared"        Version="$(ModSharpVersion)" PrivateAssets="all" ExcludeAssets="runtime" />
+    <PackageReference Include="ModSharp.Sharp.Modules.AdminManager.Shared"         Version="$(ModSharpVersion)" PrivateAssets="all" ExcludeAssets="runtime" />
+    <PackageReference Include="ModSharp.Sharp.Modules.AdminCommands.Shared"        Version="$(ModSharpVersion)" PrivateAssets="all" ExcludeAssets="runtime" />
+    <PackageReference Include="ModSharp.Sharp.Modules.TargetingManager.Shared"     Version="$(ModSharpVersion)" PrivateAssets="all" ExcludeAssets="runtime" />
+    <PackageReference Include="ModSharp.Sharp.Extensions.GameEventManager"         Version="$(ModSharpVersion)" PrivateAssets="all" ExcludeAssets="runtime" />
+  </ItemGroup>
+</Project>

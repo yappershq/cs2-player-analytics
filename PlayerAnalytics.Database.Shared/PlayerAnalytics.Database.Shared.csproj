@@ -1,0 +1,3 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- No package references — ORM-agnostic shared interfaces and attributes -->
+</Project>

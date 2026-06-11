@@ -95,8 +95,13 @@ public sealed class ModsharpPlugin : IModSharpModule
         }
         else
         {
-            _provider.GetRequiredService<PlayerAnalyticsService>().SetDatabase(dbProvider);
+            var service = _provider.GetRequiredService<PlayerAnalyticsService>();
+            service.SetDatabase(dbProvider);
             _logger.LogInformation("[PlayerAnalytics] Database provider connected");
+
+            // Crash recovery — close sessions a previous crash left open
+            var serverId = _provider.GetRequiredService<ConnectionTracker>().ServerId;
+            _ = service.CloseOrphanedSessionsAsync(serverId);
         }
 
         _logger.LogInformation("[PlayerAnalytics] Plugin loaded successfully");

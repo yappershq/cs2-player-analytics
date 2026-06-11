@@ -27,6 +27,7 @@ internal sealed class ConnectionTracker : IClientListener
     private readonly PlayerAnalyticsService     _service;
     private readonly ILogger<ConnectionTracker> _logger;
     private readonly string                     _serverId;
+    internal string ServerId => _serverId;
 
     // Per-slot connect timestamps so we can compute duration on disconnect.
     // Indexed by (int)(byte)client.Slot — same double-cast pattern used throughout codebase.

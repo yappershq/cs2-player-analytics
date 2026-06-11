@@ -90,6 +90,41 @@ internal sealed class PlayerAnalyticsService : IPlayerAnalyticsService
     }
 
     /// <summary>
+    /// Crash recovery: close every session this server left open (a crash never
+    /// writes DisconnectedAt, so rejoining players stack duplicate "online" rows
+    /// and consumers like the website player list overcount). DurationSeconds is
+    /// left NULL on purpose — the real session length is unknown, and playtime
+    /// queries filter on DurationSeconds IS NOT NULL.
+    /// </summary>
+    internal async Task CloseOrphanedSessionsAsync(string serverId)
+    {
+        if (_db is null) return;
+        try
+        {
+            var now = DateTime.UtcNow;
+            var orphans = await _db.Queryable<ConnectionLogEntity>()
+                .Where(e => e.ServerId == serverId && e.DisconnectedAt == null)
+                .ToListAsync();
+
+            if (orphans.Count == 0) return;
+
+            foreach (var row in orphans)
+            {
+                row.DisconnectedAt = now;
+                await _db.UpdateColumnsAsync(row, e => new { e.DisconnectedAt });
+            }
+
+            _logger.LogWarning(
+                "[PlayerAnalytics] Closed {Count} orphaned session(s) for '{ServerId}' left open by a previous crash",
+                orphans.Count, serverId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[PlayerAnalytics] Failed to close orphaned sessions for '{ServerId}'", serverId);
+        }
+    }
+
+    /// <summary>
     /// Updates the disconnect time and duration for an existing row.
     /// </summary>
     internal async Task LogDisconnectAsync(string steamId, DateTime connectedAt)
